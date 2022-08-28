@@ -9,13 +9,8 @@ import sqlite3
 from widgets.newTypeDialog import NewTypeDialog
 
 
-"""
-TODO
 
-    - Vorhandene Geräte nach Typ mit Seriennummer anzeigen lassen (nur aktive)
-    - Neue Gerät hinzufügen
-        - Seriennummer, Typ, Anschaffungspreis --> Daraus dann Berechnung Wochenpreis
-"""
+
 
 
 class Articles(QWidget):

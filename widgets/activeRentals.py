@@ -7,12 +7,17 @@ from PyQt6.QtCore import *
 
 
 class ActiveRentals(QWidget):
-    # Calender for daterange
+    
 
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
 
         self.activeRentalsLayout = QVBoxLayout(self)
+
+        # Update Button
+        self.updateButton = QPushButton("Update")
+        self.updateButton.clicked.connect(self.updateLines)
+        self.activeRentalsLayout.addWidget(self.updateButton)
 
         # Headers
 
@@ -57,6 +62,35 @@ class ActiveRentals(QWidget):
 
             self.activeRentalsLayout.addWidget(line)
 
+    def updateLines(self, rental):
+        count = self.activeRentalsLayout.count()
+
+        item = self.activeRentalsLayout.itemAt(count-1)
+        widget = item.widget()
+
+        latest_id = widget.ausleihe_id
+
+        rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum
+                    FROM ausleihe
+                    JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
+                    WHERE ausleihe_id > {latest_id}
+                """
+
+        conn = sqlite3.connect("db\\verleihverwaltung.db")
+        cursor = conn.cursor()
+        rentals = cursor.execute(rentals_query).fetchall()
+
+        conn.commit()
+        cursor.close()
+
+        if len(rentals) == 0:
+            pass
+        for rental in rentals:
+
+            line = ActiveRentalLine(self, rental)
+
+            self.activeRentalsLayout.addWidget(line)
+
 
 class ActiveRentalLine(QWidget):
 
@@ -65,37 +99,37 @@ class ActiveRentalLine(QWidget):
         super(QWidget, self).__init__(parent)
 
         self.ausleihe_id = rental[0]
-        vorzuname = rental[1]
-        startdatum = datetime.strptime(rental[2], '%Y-%m-%d')
-        versandTyp = "Versand" if rental[3] == 1 else "Abholung"
-        bezahldatum = rental[4]
-        versendetdatum = rental[5]
+        self.vorzuname = rental[1]
+        self.startdatum = datetime.strptime(rental[2], '%Y-%m-%d')
+        self.versandTyp = "Versand" if rental[3] == 1 else "Abholung"
+        self.bezahldatum = rental[4]
+        self.versendetdatum = rental[5]
 
         self.idLabel = QLabel(str(self.ausleihe_id))
-        self.vorzunameLabel = QLabel(vorzuname)
+        self.vorzunameLabel = QLabel(self.vorzuname)
         self.bezahltCheckBox = QCheckBox()
 
-        self.versandTypLabel = QLabel(versandTyp)
+        self.versandTypLabel = QLabel(self.versandTyp)
         self.versandDatumLabel = QLabel()
         self.versendetCheckBox = QCheckBox()
         self.rueckgabeCheckBox = QCheckBox()
         self.infoButton = QPushButton("Info")
         self.infoButton.clicked.connect(self.showInfo)
 
-        if bezahldatum is not None:
+        if self.bezahldatum is not None:
             self.bezahltCheckBox.setChecked(True)
         else:
             self.bezahltCheckBox.setChecked(False)
 
-        if versendetdatum is not None:
+        if self.versendetdatum is not None:
             self.versendetCheckBox.setChecked(True)
         else:
             self.versendetCheckBox.setChecked(False)
 
-        if versandTyp == "Versand":
-            versanddatum = startdatum - timedelta(days=3)
+        if self.versandTyp == "Versand":
+            versanddatum = self.startdatum - timedelta(days=3)
         else:
-            versanddatum = startdatum - timedelta(days=1)
+            versanddatum = self.startdatum - timedelta(days=1)
 
         self.versandDatumLabel.setText(versanddatum.strftime('%Y-%m-%d'))
 
@@ -117,7 +151,7 @@ class ActiveRentalLine(QWidget):
     def updateShipping(self):
 
         shippedDate = datetime.today().strftime('%Y-%m-%d')
-        print(shippedDate)
+       
 
         if self.sender().isChecked() is True:
             update_query = f"""UPDATE ausleihe SET versanddatum = '{shippedDate}'
