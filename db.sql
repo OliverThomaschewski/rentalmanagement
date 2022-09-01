@@ -38,12 +38,19 @@ CREATE TABLE ausleiheninhalt(
     serien_nr TEXT REFERENCES artikel(serien_nr)
 );
 
+
+CREATE TABLE ausgabentyp (
+    bezeichnung TEXT PRIMARY KEY
+);
+
 CREATE TABLE ausgaben (
     ausgaben_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ausgabentyp TEXT REFERENCES ausgabentyp(bezeichnung),
     datum TEXT,
-    bezeichnung TEXT,
     betrag REAL
 );
+
+
 
 CREATE TABLE versandkosten(
     bezeichnung TEXT UNIQUE,

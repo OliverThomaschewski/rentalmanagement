@@ -29,6 +29,7 @@ class ActiveRentals(QWidget):
         self.shippingTypeLabel = QLabel("Liefertyp")
         self.shippingDateLabel = QLabel("Versenden am")
         self.sentLabel = QLabel("verschickt")
+        self.returnDateLabel = QLabel("Rückgabe am")
         self.receivedLabel = QLabel("zurück erhalten")
         self.dummyLabel = QLabel()
 
@@ -38,12 +39,13 @@ class ActiveRentals(QWidget):
         self.activeRentalsHeaderLayout.addWidget(self.shippingTypeLabel)
         self.activeRentalsHeaderLayout.addWidget(self.shippingDateLabel)
         self.activeRentalsHeaderLayout.addWidget(self.sentLabel)
+        self.activeRentalsHeaderLayout.addWidget(self.returnDateLabel)
         self.activeRentalsHeaderLayout.addWidget(self.receivedLabel)
         self.activeRentalsHeaderLayout.addWidget(self.dummyLabel)
 
         self.activeRentalsLayout.addLayout(self.activeRentalsHeaderLayout)
 
-        rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum
+        rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum
                     FROM ausleihe
                     JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
                     WHERE rueckgabedatum IS NULL
@@ -104,6 +106,7 @@ class ActiveRentalLine(QWidget):
         self.versandTyp = "Versand" if rental[3] == 1 else "Abholung"
         self.bezahldatum = rental[4]
         self.versendetdatum = rental[5]
+        self.enddatum = datetime.strptime(rental[6], '%Y-%m-%d')
 
         self.idLabel = QLabel(str(self.ausleihe_id))
         self.vorzunameLabel = QLabel(self.vorzuname)
@@ -112,6 +115,7 @@ class ActiveRentalLine(QWidget):
         self.versandTypLabel = QLabel(self.versandTyp)
         self.versandDatumLabel = QLabel()
         self.versendetCheckBox = QCheckBox()
+        self.rueckgabeDatumLabel = QLabel()
         self.rueckgabeCheckBox = QCheckBox()
         self.infoButton = QPushButton("Info")
         self.infoButton.clicked.connect(self.showInfo)
@@ -128,10 +132,13 @@ class ActiveRentalLine(QWidget):
 
         if self.versandTyp == "Versand":
             versanddatum = self.startdatum - timedelta(days=3)
+            rueckgabedatum = self.enddatum + timedelta(days=3)
         else:
             versanddatum = self.startdatum - timedelta(days=1)
+            rueckgabedatum = self.enddatum + timedelta(days=2)
 
         self.versandDatumLabel.setText(versanddatum.strftime('%Y-%m-%d'))
+        self.rueckgabeDatumLabel.setText(rueckgabedatum.strftime('%Y-%m-%d'))
 
         self.bezahltCheckBox.toggled.connect(self.updatePaid)
         self.versendetCheckBox.toggled.connect(self.updateShipping)
@@ -145,6 +152,7 @@ class ActiveRentalLine(QWidget):
         self.activeRentalLayout.addWidget(self.versandTypLabel)
         self.activeRentalLayout.addWidget(self.versandDatumLabel)
         self.activeRentalLayout.addWidget(self.versendetCheckBox)
+        self.activeRentalLayout.addWidget(self.rueckgabeDatumLabel)
         self.activeRentalLayout.addWidget(self.rueckgabeCheckBox)
         self.activeRentalLayout.addWidget(self.infoButton)
 

@@ -1,14 +1,14 @@
 
-from ast import Delete
-from asyncio.windows_events import NULL
-from datetime import date, timedelta, datetime
-import datetime
+
+
+from datetime import date, timedelta
+
 import math
 from pickle import NONE
 import random
 import sqlite3
-from ssl import ALERT_DESCRIPTION_HANDSHAKE_FAILURE
-from typing import ItemsView
+
+
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
@@ -24,7 +24,7 @@ class NewRental(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
 
-        self.article_list = []
+        
         self.object_list = []
         self.shippingCost = 0.0
         #self.shippingIndex = None
@@ -394,6 +394,30 @@ class NewRental(QWidget):
             conn.commit()
 
         cursor.close()
+
+        self.reset()
+
+
+    def reset(self):
+        
+
+        # Resetting all text fields
+
+        self.days_le.setText("")
+        self.weeks_le.setText("0")
+        self.shipping_cb.setCurrentIndex(-1)
+        self.total_le.setText("")
+
+        # Reset Adressline
+
+        self.existing_costumer_cb.setCurrentIndex(-1)
+        self.name_field.setText("")
+        self.surname_field.setText("")
+        self.street_field.setText("")
+        self.plz_field.setText("")
+        self.city_field.setText("")
+        self.email_field.setText("")
+
 
 
 class AddArticle(QWidget):

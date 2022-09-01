@@ -1,0 +1,17 @@
+
+data.csv
+dist/Verleihverwaltung.exe
+widgets/__pycache__/newRental.cpython-310.pyc
+widgets/__pycache__/expenses.cpython-310.pyc
+widgets/__pycache__/activeRentals.cpython-310.pyc
+widgets/__pycache__/articles.cpython-310.pyc
+widgets/__pycache__/newRental.cpython-310.pyc
+*.toc
+*.zip
+*.pyc
+*.pyz
+*.manifest
+*.pkg
+*.txt
+*.html
+*.pyc
