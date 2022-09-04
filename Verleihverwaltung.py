@@ -6,7 +6,7 @@ import sys
 from widgets.activeRentals import ActiveRentals
 from widgets.articles import Articles
 
-from widgets.newRental import NewRental#
+from widgets.newRental import NewRental
 from widgets.expenses import Expenses
 
 

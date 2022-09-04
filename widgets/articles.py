@@ -143,6 +143,27 @@ class Articles(QWidget):
         self.articles_list.clear()
 
         artikeltyp = self.type_cb.currentText()
+        freeSerialNumbers = []
+        rentedSerialNumbers = []
+        price = None
+
+        # Get all Serial Numbers
+        conn = sqlite3.connect("db\\verleihverwaltung.db")
+        query = f"""SELECT artikel.serien_nr, artikeltyp.wochenpreis
+                    FROM artikel
+                    JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
+                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND artikel.aktiv = 1"""
+
+        data = conn.execute(query).fetchall()
+
+        conn.close()
+        price = str(data[0][1]) + " €"
+
+        for item in data:
+            freeSerialNumbers.append(item[0])
+
+
+        # Get Serial Numbers that are rented out until after today
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
         query = f"""SELECT artikel.serien_nr, artikeltyp.wochenpreis,ausleihe.startdatum, ausleihe.enddatum, ausleihe.ausleihe_id
@@ -153,18 +174,30 @@ class Articles(QWidget):
                     WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND (ausleihe.enddatum >= date() OR ausleihe.enddatum is NULL) AND artikel.aktiv = 1"""
 
         data = conn.execute(query).fetchall()
-
+    
         conn.close()
 
         # Showing Data in ListWidget, this could probably done prettier, but it works, yay!
-        print(data)
+       
         self.articles_list.addItem("Seriennummer\t\tWochenpreis\t\tStartdatum\t\tEnddatum\t\tAusleihe")
         try:
             for item in data:
                 row = item[0] + "\t\t" + str(item[1]) + " €" + "\t\t" + str(item[2]) + "\t\t" + str(item[3]) + "\t\t" + str(item[4])
                 self.articles_list.addItem(row)
+                rentedSerialNumbers.append(item[0])
         except:
             pass
+
+
+        for item in rentedSerialNumbers:
+            if item in freeSerialNumbers:
+                freeSerialNumbers.remove(item)
+            else: 
+                continue
+
+        for item in freeSerialNumbers:
+            self.articles_list.addItem(f"{item}\t\t{price}\t\tNicht verliehen")    
+
 
     def addArticle(self):
 
