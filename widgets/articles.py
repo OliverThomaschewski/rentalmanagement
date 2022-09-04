@@ -5,6 +5,8 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 
 import sqlite3
+from widgets.deactivateArticleType import DeactivateArticleType
+from widgets.deactivateSerialNr import DeactivateSerialNr
 
 from widgets.newTypeDialog import NewTypeDialog
 
@@ -30,9 +32,19 @@ class Articles(QWidget):
         self.new_type_bt.setFixedWidth(100)
         self.new_type_bt.clicked.connect(self.add_type)
 
+        self.deactivateTypeButton = QPushButton("Typ deaktivieren")
+        self.deactivateTypeButton.setFixedWidth(100)
+        self.deactivateTypeButton.clicked.connect(self.deactivateArticleType)
+
+        self.deactivateSerialButton = QPushButton("SerienNr deaktivieren")
+        self.deactivateSerialButton.setFixedWidth(100)
+        self.deactivateSerialButton.clicked.connect(self.deactivateSerialNr)
+
         # Put Type Layout together
 
         self.choose_type_layout.addWidget(self.new_type_bt)
+        self.choose_type_layout.addWidget(self.deactivateTypeButton)
+        self.choose_type_layout.addWidget(self.deactivateSerialButton)
 
         self.type_frame = QFrame()
 
@@ -49,7 +61,7 @@ class Articles(QWidget):
 
         # Get Article Types and add to ComboBox
         conn = sqlite3.connect("db\\verleihverwaltung.db")
-        query = f"""SELECT bezeichnung FROM artikeltyp"""
+        query = f"""SELECT bezeichnung FROM artikeltyp WHERE aktiv = 1"""
 
         data = conn.execute(query).fetchall()
         self.type_cb.addItems([i[0] for i in data])
@@ -130,23 +142,26 @@ class Articles(QWidget):
 
         self.articles_list.clear()
 
+        artikeltyp = self.type_cb.currentText()
+
         conn = sqlite3.connect("db\\verleihverwaltung.db")
-        query = f"""SELECT artikel.serien_nr, artikeltyp.bezeichnung, artikeltyp.wochenpreis 
-                    FROM artikel 
-                    JOIN artikeltyp 
-                    ON artikel.artikeltyp_id = artikeltyp.artikeltyp_id 
-                    WHERE artikeltyp.bezeichnung = '{self.type_cb.currentText()}'"""
+        query = f"""SELECT artikel.serien_nr, artikeltyp.wochenpreis,ausleihe.startdatum, ausleihe.enddatum, ausleihe.ausleihe_id
+                    FROM artikel
+                    JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
+                    LEFT JOIN ausleiheninhalt ON ausleiheninhalt.serien_nr = artikel.serien_nr
+                    LEFT JOIN ausleihe ON ausleihe.ausleihe_id = ausleiheninhalt.ausleihe_id
+                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND (ausleihe.enddatum >= date() OR ausleihe.enddatum is NULL) AND artikel.aktiv = 1"""
 
         data = conn.execute(query).fetchall()
 
         conn.close()
 
         # Showing Data in ListWidget, this could probably done prettier, but it works, yay!
-
-        self.articles_list.addItem("Seriennummer\t\tTyp\t\tWochenpreis")
+        print(data)
+        self.articles_list.addItem("Seriennummer\t\tWochenpreis\t\tStartdatum\t\tEnddatum\t\tAusleihe")
         try:
             for item in data:
-                row = item[0] + "\t\t" + item[1] + "\t\t" + str(item[2]) + " €"
+                row = item[0] + "\t\t" + str(item[1]) + " €" + "\t\t" + str(item[2]) + "\t\t" + str(item[3]) + "\t\t" + str(item[4])
                 self.articles_list.addItem(row)
         except:
             pass
@@ -213,3 +228,13 @@ class Articles(QWidget):
                 self.weekly_price_le.setText(str(weekly_price))
             except:
                 self.weekly_price_le.setText("Zahl eingeben")
+
+    def deactivateArticleType(self):
+        dlg =DeactivateArticleType(self)
+        dlg.setWindowTitle("Artikeltyp löschen")
+        dlg.exec()
+    def deactivateSerialNr(self):
+
+        dlg = DeactivateSerialNr(self)
+        dlg.setWindowTitle("Seriennummer löschen")
+        dlg.exec()

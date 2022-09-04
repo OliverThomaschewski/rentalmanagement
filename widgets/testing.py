@@ -25,3 +25,12 @@ conn.commit()
 cursor.close()
 
 print(data)
+
+
+SELECT artikel.serien_nr, artikeltyp.bezeichnung, ausleihe.startdatum, ausleihe.enddatum
+FROM artikel
+JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
+LEFT JOIN ausleiheninhalt ON ausleiheninhalt.serien_nr = artikel.serien_nr
+LEFT JOIN ausleihe ON ausleihe.ausleihe_id = ausleiheninhalt.ausleihe_id
+WHERE artikeltyp.bezeichnung = 'Testartikel' AND (ausleihe.enddatum >= date() OR ausleihe.enddatum = NULL)
+

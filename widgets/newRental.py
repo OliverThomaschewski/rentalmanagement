@@ -441,7 +441,7 @@ class AddArticle(QWidget):
         self.articleLineLayout = QHBoxLayout(self)
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
-        query = f"""SELECT bezeichnung FROM artikeltyp"""
+        query = f"""SELECT bezeichnung FROM artikeltyp WHERE aktiv = 1"""
 
         articleTypes = conn.execute(query).fetchall()
         conn.close()
@@ -537,7 +537,7 @@ class AddArticle(QWidget):
                     JOIN ausleihe ON ausleihe.ausleihe_id = ausleiheninhalt.ausleihe_id
                     JOIN artikel ON artikel.serien_nr = ausleiheninhalt.serien_nr
                     JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
-                    WHERE artikeltyp.bezeichnung = '{artikeltyp}'
+                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND artikel.aktiv = 1
                     """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
@@ -550,7 +550,7 @@ class AddArticle(QWidget):
         serial_nr_query = f"""SELECT artikel.serien_nr
                         FROM artikel
                         JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
-                        WHERE artikeltyp.bezeichnung = '{artikeltyp}'
+                        WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND artikel.aktiv = 1
                     """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")

@@ -17,6 +17,7 @@ CREATE TABLE artikeltyp(
 CREATE TABLE artikel(
     serien_nr TEXT PRIMARY KEY,
     artikeltyp_id INTEGER REFERENCES artikeltyp(artikeltyp_id),
+    aktiv INTEGER DEFAULT 1
     
 );
 
