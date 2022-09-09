@@ -1,3 +1,4 @@
+from cmd import IDENTCHARS
 from datetime import date, timedelta
 
 import math
@@ -32,7 +33,7 @@ class Expenses(QWidget):
         self.typeComboBox.activated.connect(self.setCursor)
 
         self.expensesList = QListWidget()
-        self.expensesList.setFixedHeight(150)
+        self.expensesList.setFixedHeight(200)
         self.getLatestExpenses()
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
@@ -116,7 +117,9 @@ class Expenses(QWidget):
         conn.commit()
         conn.close()
 
+        headers = f"\033[1mID\tBezeichnung\t\tDatum\tBetrag\033[0m"
+        self.expensesList.addItem(headers)
 
         for expense in expenses:
-            string = f"{str(expense[0])}\t{str(expense[1])}\t{str(expense[2])}"
+            string = f"{str(expense[0])}\t{str(expense[1])}\t\t{str(expense[2])}\t{str(expense[3])}€"
             self.expensesList.addItem(string)

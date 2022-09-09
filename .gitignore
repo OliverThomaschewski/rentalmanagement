@@ -22,3 +22,4 @@ Verleihverwaltung.spec
 widgets/__pycache__/activeRentals.cpython-310.pyc
 widgets/__pycache__/activeRentals.cpython-310.pyc
 *.pyc
+*.pyc
