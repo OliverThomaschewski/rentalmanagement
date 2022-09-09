@@ -31,6 +31,10 @@ class Expenses(QWidget):
         self.typeComboBox.setPlaceholderText("Typ wählen")
         self.typeComboBox.activated.connect(self.setCursor)
 
+        self.expensesList = QListWidget()
+        self.expensesList.setFixedHeight(150)
+        self.getLatestExpenses()
+
         conn = sqlite3.connect("db\\verleihverwaltung.db")
         query = f"""SELECT bezeichnung FROM ausgabentyp"""
         data = conn.execute(query).fetchall()
@@ -56,6 +60,7 @@ class Expenses(QWidget):
         self.expensesItemsLayout.addLayout(self.linesLayout)
 
         self.expensesLayout.addLayout(self.expensesItemsLayout)
+        self.expensesLayout.addWidget(self.expensesList)
 
     def addType(self):
         item, ok = QInputDialog.getText(self, "Neuer Typ", "Typ: ")
@@ -85,6 +90,9 @@ class Expenses(QWidget):
 
         self.priceLineEdit.setText("")
 
+        self.expensesList.clear()
+        self.getLatestExpenses()
+
     def setCursor(self):
         self.priceLineEdit.setFocus()
 
@@ -97,3 +105,18 @@ class Expenses(QWidget):
 
         finally:
             return betrag
+
+    def getLatestExpenses(self):
+
+        conn = sqlite3.connect("db\\verleihverwaltung.db")
+        query = f"""SELECT * FROM ausgaben 
+                    ORDER BY ROWID DESC
+                    Limit 10"""
+        expenses = conn.execute(query).fetchall()
+        conn.commit()
+        conn.close()
+
+
+        for expense in expenses:
+            string = f"{str(expense[0])}\t{str(expense[1])}\t{str(expense[2])}"
+            self.expensesList.addItem(string)

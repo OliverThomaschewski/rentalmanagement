@@ -72,7 +72,7 @@ class ActiveRentals(QWidget):
 
         latest_id = widget.ausleihe_id
 
-        rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum
+        rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum
                     FROM ausleihe
                     JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
                     WHERE ausleihe_id > {latest_id}
