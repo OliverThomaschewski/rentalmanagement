@@ -57,3 +57,10 @@ CREATE TABLE versandkosten(
     bezeichnung TEXT UNIQUE,
     preis REAL
 );
+
+CREATE TABLE sonsteinnahmen(
+    datum TEXT,
+    bezeichnung TEXT,
+    betrag REAL
+
+);

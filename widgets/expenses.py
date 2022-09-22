@@ -79,9 +79,7 @@ class Expenses(QWidget):
         ausgabentyp = self.typeComboBox.currentText()
         betrag = self.convertToFloat(self.priceLineEdit.text())
 
-        print(datum)
 
-        print(betrag)
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
         query = f"""INSERT INTO ausgaben (ausgabentyp, datum, betrag) VALUES ('{ausgabentyp}', '{datum}', {betrag})"""
@@ -117,7 +115,7 @@ class Expenses(QWidget):
         conn.commit()
         conn.close()
 
-        headers = f"\033[1mID\tBezeichnung\t\tDatum\tBetrag\033[0m"
+        headers = f"ID\tBezeichnung\t\tDatum\tBetrag"
         self.expensesList.addItem(headers)
 
         for expense in expenses:

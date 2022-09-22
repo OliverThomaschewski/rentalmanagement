@@ -8,6 +8,7 @@ from widgets.articles import Articles
 
 from widgets.newRental import NewRental
 from widgets.expenses import Expenses
+from widgets.otherRevenues import OtherRevenues
 
 
 class MainWindow(QMainWindow):
@@ -16,7 +17,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         self.setWindowTitle("Verleihverwaltung")
-        self.resize(1200, 600)
+        self.resize(1000, 600)
 
         self.tabs = QTabWidget()
 
@@ -26,11 +27,13 @@ class MainWindow(QMainWindow):
         self.active_rentals_tab = ActiveRentals(self)
         self.articles_tab = Articles(self)
         self.expenses_tab = Expenses(self)
+        self.otherRevenues_tab = OtherRevenues(self)
 
         self.tabs.addTab(self.new_rental_tab, "Neue Ausleihe")
         self.tabs.addTab(self.active_rentals_tab, "Aktive Ausleihen")
         self.tabs.addTab(self.articles_tab, "Artikel Hinzufügen")
         self.tabs.addTab(self.expenses_tab, "Ausgaben")
+        self.tabs.addTab(self.otherRevenues_tab, "Sonstige Einnahmen")
 
         
 
