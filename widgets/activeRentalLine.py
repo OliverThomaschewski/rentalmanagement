@@ -6,6 +6,8 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import smtplib
 from email.mime.text import MIMEText
+import os
+import dotenv
 
 from widgets.rentalInfo import RentalInfo
 
@@ -169,7 +171,7 @@ Wir würden uns freuen, wenn wir dich in unserem Newsletter begrüßen dürfen.
 
 Darin erhältst du Updates zu unseren Ausleihartikeln und zusätzlich 10% bei deiner nächsten Ausleihe.
 
-Eintragen kannst du dich über folgenden Link: linklink
+Eintragen kannst du dich über folgenden Link: https://mailchi.mp/9a820de77a38/outleih-landing
 
 Vielen dank für dein Vetrauen in uns und bis zum nächsten Mal.
 
@@ -182,6 +184,9 @@ Dein Outleih Team """
 
         s = smtplib.SMTP_SSL("smtp.strato.de", 465)
 
-        s.login("mail@outleih.de", "ohiwc1Bt1Md")
+        dotenv.load_dotenv("widgets\credentials.env")
+        login = os.getenv("stratoLOGIN")
+        pw = os.getenv("stratoPW")
+        s.login(login, pw)
         s.sendmail(sender, receiver, mail.as_string())
         s.quit()

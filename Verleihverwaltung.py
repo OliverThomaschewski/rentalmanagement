@@ -8,6 +8,7 @@ from widgets.articles import Articles
 
 from widgets.newRental import NewRental
 from widgets.expenses import Expenses
+from widgets.newSpecialRental import NewSpecialRental
 from widgets.otherRevenues import OtherRevenues
 
 
@@ -24,6 +25,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tabs)
 
         self.new_rental_tab = NewRental(self)
+        self.special_rental_tab = NewSpecialRental(self)
         self.active_rentals_tab = ActiveRentals(self)
         self.articles_tab = Articles(self)
         self.expenses_tab = Expenses(self)
@@ -34,6 +36,7 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.articles_tab, "Artikel Hinzufügen")
         self.tabs.addTab(self.expenses_tab, "Ausgaben")
         self.tabs.addTab(self.otherRevenues_tab, "Sonstige Einnahmen")
+        self.tabs.addTab(self.special_rental_tab, "Special Ausleihe")
 
         
 
