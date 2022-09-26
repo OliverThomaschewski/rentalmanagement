@@ -1,12 +1,13 @@
 
 
-
 from datetime import date, timedelta
 
 import math
 from pickle import NONE
 import random
 import sqlite3
+import os
+import dotenv
 
 
 from PyQt6.QtGui import *
@@ -14,6 +15,8 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import pandas as pd
 import numpy as np
+import paypalrestsdk
+from paypalrestsdk import Invoice
 
 from widgets.activeRentals import ActiveRentalLine, ActiveRentals
 
@@ -24,10 +27,8 @@ class NewRental(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
 
-        
         self.object_list = []
         self.shippingCost = 0.0
-        #self.shippingIndex = None
 
         # Verticales Layout für new_rental Tab
         self.new_rental_tab_layout = QVBoxLayout(self)
@@ -394,12 +395,124 @@ class NewRental(QWidget):
             conn.commit()
 
         cursor.close()
+        self.createInvoice()
 
         self.reset()
 
+    def createInvoice(self):
+
+        startdatum = self.cal_start.selectedDate().toString("dd.MM.yyyy")
+        enddatum = self.cal_end.selectedDate().toString("dd.MM.yyyy")
+        rueckgabe_datum = self.cal_end.selectedDate()
+
+        if self.shipping_cb.currentIndex() == 0:
+            rueckgabe_datum = rueckgabe_datum.addDays(2).toString("dd.MM.yyyy")
+        else:
+            rueckgabe_datum = rueckgabe_datum.addDays(3).toString("dd.MM.yyyy")
+
+        ausleiheninhalt = ""
+
+        for article in self.object_list:
+
+            ausleiheninhalt += article.article + "\n"
+
+        client_id_sb = "AeQNSEMsc8wY9sq61tVlsJai63Cr0iHSBUHsX-RK0lAL-uLdKeIL32WhFMnFa8z9kzcU3VLrjdo8NkH-"
+        secret_sb = "ENuWGMIZEnn-_n6VEWI-iPmi7dWLBpfvu21CMheGTJAgsI0JqRZ1DPEqf6tfS2c-YHAvQCbIoIkP5Juw"
+        dotenv.load_dotenv("widgets\credentials.env")
+        paypal_id = os.getenv("stratoLOGIN")
+        paypal_secret = os.getenv("stratoPW")
+        
+        paypalrestsdk.configure(
+
+            {
+                "mode": "sandbox",
+                "client_id": client_id_sb,
+                "client_secret": secret_sb
+            }
+        )
+        invoice = Invoice({
+
+            'merchant_info': {
+                "email": "mail@outleih.de",
+                "first_name": "Oliver",
+                "last_name": "Thomaschewski",
+                "business_name": "Outleih",
+                
+                "phone": {
+                    "country_code": "0049",
+                    "national_number": "017623978262"
+                },
+
+                "address": {
+                    "line1": "Friedrichsbergerstr. 4",
+                    "city": "Berlin",
+                    "postal_code": "10243"
+                }
+
+            },
+
+            "logo_url": "https://github.com/OliverThomaschewski/verleihverwaltung/blob/main/images/Logo.png?raw=true",
+
+
+            "billing_info": [{
+                "email": self.email_field.text(),
+
+
+            }],
+
+            # Billing Info Ende
+
+
+
+
+            "items": [{
+                "name": "GoPro Paket",
+                "description": ausleiheninhalt,
+                "quantity": 1,
+                "unit_price": {
+                    "currency": "EUR",
+                    "value": float(self.total_le.text())
+                }
+            },
+
+            ],
+
+            # Items Ende
+
+            "shipping_info": {
+                "first_name": self.name_field.text(),
+                "last_name": self.surname_field.text(),
+
+
+                "address": {
+                    "line1": self.street_field.text(),
+                    "city": self.city_field.text(),
+                    "postal_code": self.plz_field.text()
+                }
+
+            },
+
+
+            "note": f"""Ausleihe vom {startdatum} - {enddatum}
+            Rückgabe bis spätestens {rueckgabe_datum}
+            Bei verspäteter Rückgabe wird eine weitere Wochenleihe fällig""",
+
+
+        }
+        )
+
+        if self.shipping_cb.currentIndex() != 0:
+            invoice["shipping_cost"] = {
+                "amount": {
+                    "currency": "EUR",
+                    "value": self.shippingCost
+                }
+            }
+
+        invoice.create()
+        invoice.send()
 
     def reset(self):
-        
 
         # Resetting all text fields
 
@@ -419,7 +532,6 @@ class NewRental(QWidget):
         self.email_field.setText("")
 
 
-
 class AddArticle(QWidget):
 
     def __init__(self, parent) -> None:
@@ -429,6 +541,7 @@ class AddArticle(QWidget):
         self.parent = parent
 
         self.serialNr = None
+        self.article = None
         self.weeklyPrice = 0.0
 
         self.articles_cb = QComboBox()
@@ -584,6 +697,7 @@ class AddArticle(QWidget):
             self.serialNr = random.choice(verfügbare_serial)
 
         self.availableSerial.setText(self.serialNr)
+        self.article = self.articles_cb.currentText()
 
     def updateTotal(self):
         total = 0.0

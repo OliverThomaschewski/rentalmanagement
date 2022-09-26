@@ -167,6 +167,7 @@ class ActiveRentalLine(QWidget):
 hiermit bestätigen wir die Rückgabe deiner Ausleihe.
 
 Solltest du in Zukunft wieder etwas benötigen, schreib uns gerne.
+
 Wir würden uns freuen, wenn wir dich in unserem Newsletter begrüßen dürfen.
 
 Darin erhältst du Updates zu unseren Ausleihartikeln und zusätzlich 10% bei deiner nächsten Ausleihe.
