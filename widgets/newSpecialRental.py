@@ -7,6 +7,10 @@ import math
 from pickle import NONE
 import random
 import sqlite3
+import os
+import dotenv
+import paypalrestsdk
+from paypalrestsdk import Invoice
 
 
 from PyQt6.QtGui import *
@@ -27,7 +31,7 @@ class NewSpecialRental(QWidget):
         
         self.object_list = []
         self.shippingCost = 0.0
-        #self.shippingIndex = None
+        
 
         # Verticales Layout für new_rental Tab
         self.new_rental_tab_layout = QVBoxLayout(self)
@@ -394,8 +398,122 @@ class NewSpecialRental(QWidget):
             conn.commit()
 
         cursor.close()
+        self.createInvoice()
 
         self.reset()
+
+    def createInvoice(self):
+
+        startdatum = self.cal_start.selectedDate().toString("dd.MM.yyyy")
+        enddatum = self.cal_end.selectedDate().toString("dd.MM.yyyy")
+        rueckgabe_datum = self.cal_end.selectedDate()
+
+        if self.shipping_cb.currentIndex() == 0:
+            rueckgabe_datum = rueckgabe_datum.addDays(2).toString("dd.MM.yyyy")
+        else:
+            rueckgabe_datum = rueckgabe_datum.addDays(3).toString("dd.MM.yyyy")
+
+        ausleiheninhalt = ""
+
+        for article in self.object_list:
+
+            ausleiheninhalt += article.article + "\n"
+
+        
+        dotenv.load_dotenv("widgets\credentials.env")
+        paypal_id = os.getenv("paypalID")
+        paypal_secret = os.getenv("paypalSECRET")
+        
+        paypalrestsdk.configure(
+
+            {
+                "mode": "live",
+                "client_id": paypal_id,
+                "client_secret": paypal_secret
+            }
+        )
+        invoice = Invoice({
+
+            'merchant_info': {
+                "email": "mail@outleih.de",
+                "first_name": "Oliver",
+                "last_name": "Thomaschewski",
+                "business_name": "Outleih",
+                
+                "phone": {
+                    "country_code": "0049",
+                    "national_number": "017623978262"
+                },
+
+                "address": {
+                    "line1": "Friedrichsbergerstr. 4",
+                    "city": "Berlin",
+                    "postal_code": "10243"
+                }
+
+            },
+
+            "logo_url": "https://github.com/OliverThomaschewski/verleihverwaltung/blob/main/images/Logo.png?raw=true",
+
+
+            "billing_info": [{
+                "email": self.email_field.text(),
+
+
+            }],
+
+            # Billing Info Ende
+
+
+
+
+            "items": [{
+                "name": "GoPro Paket",
+                "description": ausleiheninhalt,
+                "quantity": 1,
+                "unit_price": {
+                    "currency": "EUR",
+                    "value": float(self.total_le.text())
+                }
+            },
+
+            ],
+
+            # Items Ende
+
+            "shipping_info": {
+                "first_name": self.name_field.text(),
+                "last_name": self.surname_field.text(),
+
+
+                "address": {
+                    "line1": self.street_field.text(),
+                    "city": self.city_field.text(),
+                    "postal_code": self.plz_field.text()
+                }
+
+            },
+
+
+            "note": f"""Ausleihe vom {startdatum} - {enddatum}
+            Rückgabe bis spätestens {rueckgabe_datum}
+            Bei verspäteter Rückgabe wird eine weitere Wochenleihe fällig""",
+
+
+        }
+        )
+
+        if self.shipping_cb.currentIndex() != 0:
+            invoice["shipping_cost"] = {
+                "amount": {
+                    "currency": "EUR",
+                    "value": self.shippingCost
+                }
+            }
+
+        invoice.create()
+        invoice.send()
+
 
 
     def reset(self):
@@ -429,6 +547,7 @@ class AddArticle(QWidget):
         self.parent = parent
 
         self.serialNr = None
+        self.article = None
         self.weeklyPrice = 0.0
 
         self.articles_cb = QComboBox()
@@ -506,6 +625,7 @@ class AddArticle(QWidget):
         self.serialsComboBox.clear()
         self.serialsComboBox.addItems([article[0] for article in articleTypes])
         self.serialNr = self.serialsComboBox.currentText()
+        self.article = self.articles_cb.currentText()
         
 
     def updateTotal(self):

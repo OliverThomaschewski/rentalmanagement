@@ -416,18 +416,17 @@ class NewRental(QWidget):
 
             ausleiheninhalt += article.article + "\n"
 
-        client_id_sb = "AeQNSEMsc8wY9sq61tVlsJai63Cr0iHSBUHsX-RK0lAL-uLdKeIL32WhFMnFa8z9kzcU3VLrjdo8NkH-"
-        secret_sb = "ENuWGMIZEnn-_n6VEWI-iPmi7dWLBpfvu21CMheGTJAgsI0JqRZ1DPEqf6tfS2c-YHAvQCbIoIkP5Juw"
+        
         dotenv.load_dotenv("widgets\credentials.env")
-        paypal_id = os.getenv("stratoLOGIN")
-        paypal_secret = os.getenv("stratoPW")
+        paypal_id = os.getenv("paypalID")
+        paypal_secret = os.getenv("paypalSECRET")
         
         paypalrestsdk.configure(
 
             {
-                "mode": "sandbox",
-                "client_id": client_id_sb,
-                "client_secret": secret_sb
+                "mode": "live",
+                "client_id": paypal_id,
+                "client_secret": paypal_secret
             }
         )
         invoice = Invoice({
