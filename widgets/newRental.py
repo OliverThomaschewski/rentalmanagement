@@ -420,6 +420,15 @@ class NewRental(QWidget):
         dotenv.load_dotenv("widgets\credentials.env")
         paypal_id = os.getenv("paypalID")
         paypal_secret = os.getenv("paypalSECRET")
+
+        email = os.getenv("email")
+        first_name= os.getenv("first_name")
+        last_name = os.getenv("last_name")
+        business_name = os.getenv("business_name")
+        phonenumber = os.getenv("phonenumber")
+        street = os.getenv("street")
+        plz = os.getenv("plz")
+        city = os.getenv("city")
         
         paypalrestsdk.configure(
 
@@ -432,20 +441,20 @@ class NewRental(QWidget):
         invoice = Invoice({
 
             'merchant_info': {
-                "email": "mail@outleih.de",
-                "first_name": "Oliver",
-                "last_name": "Thomaschewski",
-                "business_name": "Outleih",
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "business_name": business_name,
                 
                 "phone": {
                     "country_code": "0049",
-                    "national_number": "017623978262"
+                    "national_number": phonenumber
                 },
 
                 "address": {
-                    "line1": "Friedrichsbergerstr. 4",
-                    "city": "Berlin",
-                    "postal_code": "10243"
+                    "line1": street,
+                    "city": city,
+                    "postal_code": plz
                 }
 
             },
