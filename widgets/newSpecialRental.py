@@ -487,6 +487,16 @@ class NewSpecialRental(QWidget):
                 }
             },
 
+            {
+                "name": "Kaution",
+                "description": "Rückzahlung bei vollständiger und pünktlicher Rückgabe",
+                "quantity": 1,
+                "unit_price": {
+                    "currency": "EUR",
+                    "value": 50
+                }
+            },
+
             ],
 
             # Items Ende
@@ -507,7 +517,7 @@ class NewSpecialRental(QWidget):
 
             "note": f"""Ausleihe vom {startdatum} - {enddatum}
             Rückgabe bis spätestens {rueckgabe_datum}
-            Bei verspäteter Rückgabe wird eine weitere Wochenleihe fällig""",
+           """,
 
 
         }

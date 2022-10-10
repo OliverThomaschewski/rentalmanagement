@@ -416,20 +416,19 @@ class NewRental(QWidget):
 
             ausleiheninhalt += article.article + "\n"
 
-        
         dotenv.load_dotenv("widgets\credentials.env")
         paypal_id = os.getenv("paypalID")
         paypal_secret = os.getenv("paypalSECRET")
 
         email = os.getenv("email")
-        first_name= os.getenv("first_name")
+        first_name = os.getenv("first_name")
         last_name = os.getenv("last_name")
         business_name = os.getenv("business_name")
         phonenumber = os.getenv("phonenumber")
         street = os.getenv("street")
         plz = os.getenv("plz")
         city = os.getenv("city")
-        
+
         paypalrestsdk.configure(
 
             {
@@ -445,7 +444,7 @@ class NewRental(QWidget):
                 "first_name": first_name,
                 "last_name": last_name,
                 "business_name": business_name,
-                
+
                 "phone": {
                     "country_code": "0049",
                     "national_number": phonenumber
@@ -479,7 +478,17 @@ class NewRental(QWidget):
                 "quantity": 1,
                 "unit_price": {
                     "currency": "EUR",
-                    "value": float(self.total_le.text())
+                    "value": float(self.total_le.text()) - self.shippingCost
+                }
+            },
+
+                {
+                "name": "Kaution",
+                "description": "Rückzahlung bei vollständiger und pünktlicher Rückgabe",
+                "quantity": 1,
+                "unit_price": {
+                    "currency": "EUR",
+                    "value": 50
                 }
             },
 
@@ -503,7 +512,7 @@ class NewRental(QWidget):
 
             "note": f"""Ausleihe vom {startdatum} - {enddatum}
             Rückgabe bis spätestens {rueckgabe_datum}
-            Bei verspäteter Rückgabe wird eine weitere Wochenleihe fällig""",
+            """,
 
 
         }
@@ -605,7 +614,7 @@ class AddArticle(QWidget):
                     JOIN ausleihe ON ausleihe.ausleihe_id = ausleiheninhalt.ausleihe_id
                     JOIN artikel ON artikel.serien_nr = ausleiheninhalt.serien_nr
                     JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
-                    WHERE artikeltyp.bezeichnung = '{artikeltyp}'
+                    WHERE artikeltyp.bezeichnung = '{artikeltyp} AND ausleihe.storniert = 0'
                     """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
@@ -658,7 +667,7 @@ class AddArticle(QWidget):
                     JOIN ausleihe ON ausleihe.ausleihe_id = ausleiheninhalt.ausleihe_id
                     JOIN artikel ON artikel.serien_nr = ausleiheninhalt.serien_nr
                     JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
-                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND artikel.aktiv = 1
+                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND artikel.aktiv = 1 AND ausleihe.storniert = 0
                     """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")

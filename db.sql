@@ -31,7 +31,8 @@ CREATE TABLE ausleihe(
     versand INTEGER,
     bezahldatum TEXT,
     versanddatum TEXT,
-    rueckgabedatum TEXT
+    rueckgabedatum TEXT,
+    storniert INTEGER DEFAULT 0
 );
 
 CREATE TABLE ausleiheninhalt(

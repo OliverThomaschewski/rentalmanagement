@@ -39,10 +39,10 @@ class ActiveRentalLine(QWidget):
         self.infoButton = QPushButton("Info")
         self.infoButton.clicked.connect(self.showInfo)
 
-        if self.bezahldatum is not None:
-            self.bezahltCheckBox.setChecked(True)
-        else:
+        if self.bezahldatum is None or len(self.bezahldatum) == 0:
             self.bezahltCheckBox.setChecked(False)
+        else:
+            self.bezahltCheckBox.setChecked(True)
 
         if self.versendetdatum is not None:
             self.versendetCheckBox.setChecked(True)
@@ -164,6 +164,10 @@ class ActiveRentalLine(QWidget):
         vorname = data[0][0].split()[0]
         email = data[0][1]
 
+        dotenv.load_dotenv("widgets\credentials.env")
+
+        sender_mail = os.getenv("email")
+
         text = f"""Hallo {vorname},\n
 hiermit bestätigen wir die Rückgabe deiner Ausleihe.
 
@@ -180,9 +184,9 @@ Vielen dank für dein Vetrauen in uns und bis zum nächsten Mal.
 Dein Outleih Team """
 
         mail = MIMEText(text)
-        mail["subject"] = "Rückgabe GoPRo"
-        sender = "Outleih <mail@outleih.de>"
-        receiver = "o.thomaschewski@gmail.com"
+        mail["subject"] = "Rückgabe GoPro"
+        sender = f"Outleih <{sender_mail}>"
+        receiver = email
 
         s = smtplib.SMTP_SSL("smtp.strato.de", 465)
 

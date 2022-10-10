@@ -171,7 +171,7 @@ class Articles(QWidget):
                     JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
                     LEFT JOIN ausleiheninhalt ON ausleiheninhalt.serien_nr = artikel.serien_nr
                     LEFT JOIN ausleihe ON ausleihe.ausleihe_id = ausleiheninhalt.ausleihe_id
-                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND (ausleihe.enddatum >= date() OR ausleihe.enddatum is NULL) AND artikel.aktiv = 1"""
+                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND (ausleihe.enddatum >= date() OR ausleihe.enddatum is NULL) AND artikel.aktiv = 1 AND storniert = 0"""
 
         data = conn.execute(query).fetchall()
     

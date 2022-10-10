@@ -53,7 +53,7 @@ class ActiveRentals(QWidget):
         rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum
                     FROM ausleihe
                     JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
-                    WHERE rueckgabedatum IS NULL
+                    WHERE rueckgabedatum IS NULL AND storniert = 0
                 """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
@@ -80,7 +80,7 @@ class ActiveRentals(QWidget):
         rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum
                     FROM ausleihe
                     JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
-                    WHERE ausleihe_id > {latest_id}
+                    WHERE ausleihe_id > {latest_id} AND storniert = 0
                 """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
