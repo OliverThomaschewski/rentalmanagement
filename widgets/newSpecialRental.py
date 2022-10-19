@@ -94,6 +94,8 @@ class NewSpecialRental(QWidget):
         self.price_la_layout = QHBoxLayout()
         self.price_le_layout = QHBoxLayout()
 
+        self.deposit_la = QLabel("Kaution")
+        self.deposit_la.setFixedWidth(100)
         self.days_la = QLabel("Anzahl Tage")
         self.days_la.setFixedWidth(100)
         self.weeks_la = QLabel("Anzahl Wochen")
@@ -102,6 +104,10 @@ class NewSpecialRental(QWidget):
         self.shipping_la.setFixedWidth(100)
         self.total_la = QLabel("Gesamtpreis")
         self.total_la.setFixedWidth(100)
+
+
+        self.depositCheckBox = QCheckBox()
+        self.depositCheckBox.setFixedWidth(100)
 
         self.days_le = QLineEdit()
         self.days_le.setFixedWidth(100)
@@ -131,11 +137,13 @@ class NewSpecialRental(QWidget):
         self.total_le.setText("0")
         # self.total_le.textChanged.connect(self.updateTotalPrice)
 
+        self.price_la_layout.addWidget(self.deposit_la)
         self.price_la_layout.addWidget(self.days_la)
         self.price_la_layout.addWidget(self.weeks_la)
         self.price_la_layout.addWidget(self.shipping_la)
         self.price_la_layout.addWidget(self.total_la)
 
+        self.price_le_layout.addWidget(self.depositCheckBox)
         self.price_le_layout.addWidget(self.days_le)
         self.price_le_layout.addWidget(self.weeks_le)
         self.price_le_layout.addWidget(self.shipping_cb)
@@ -487,15 +495,7 @@ class NewSpecialRental(QWidget):
                 }
             },
 
-            {
-                "name": "Kaution",
-                "description": "Rückzahlung bei vollständiger und pünktlicher Rückgabe",
-                "quantity": 1,
-                "unit_price": {
-                    "currency": "EUR",
-                    "value": 50
-                }
-            },
+           
 
             ],
 
@@ -530,6 +530,20 @@ class NewSpecialRental(QWidget):
                     "value": self.shippingCost
                 }
             }
+
+        if self.depositCheckBox.isChecked() is True:
+
+            invoice["items"].append( {
+                "name": "Kaution",
+                "description": "Rückzahlung bei vollständiger und pünktlicher Rückgabe",
+                "quantity": 1,
+                "unit_price": {
+                    "currency": "EUR",
+                    "value": 50
+                }
+
+            }
+            )
 
         invoice.create()
         invoice.send()

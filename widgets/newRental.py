@@ -90,6 +90,8 @@ class NewRental(QWidget):
         self.price_la_layout = QHBoxLayout()
         self.price_le_layout = QHBoxLayout()
 
+        self.deposit_la = QLabel("Kaution")
+        self.deposit_la.setFixedWidth(100)
         self.days_la = QLabel("Anzahl Tage")
         self.days_la.setFixedWidth(100)
         self.weeks_la = QLabel("Anzahl Wochen")
@@ -98,6 +100,9 @@ class NewRental(QWidget):
         self.shipping_la.setFixedWidth(100)
         self.total_la = QLabel("Gesamtpreis")
         self.total_la.setFixedWidth(100)
+
+        self.depositCheckBox = QCheckBox()
+        self.depositCheckBox.setFixedWidth(100)
 
         self.days_le = QLineEdit()
         self.days_le.setFixedWidth(100)
@@ -127,11 +132,13 @@ class NewRental(QWidget):
         self.total_le.setText("0")
         # self.total_le.textChanged.connect(self.updateTotalPrice)
 
+        self.price_la_layout.addWidget(self.deposit_la)
         self.price_la_layout.addWidget(self.days_la)
         self.price_la_layout.addWidget(self.weeks_la)
         self.price_la_layout.addWidget(self.shipping_la)
         self.price_la_layout.addWidget(self.total_la)
 
+        self.price_le_layout.addWidget(self.depositCheckBox)
         self.price_le_layout.addWidget(self.days_le)
         self.price_le_layout.addWidget(self.weeks_le)
         self.price_le_layout.addWidget(self.shipping_cb)
@@ -417,8 +424,8 @@ class NewRental(QWidget):
             ausleiheninhalt += article.article + "\n"
 
         dotenv.load_dotenv("widgets\credentials.env")
-        paypal_id = os.getenv("paypalID")
-        paypal_secret = os.getenv("paypalSECRET")
+        paypal_id = os.getenv("paypalID_sb")
+        paypal_secret = os.getenv("paypalSECRET_sb")
 
         email = os.getenv("email")
         first_name = os.getenv("first_name")
@@ -432,7 +439,7 @@ class NewRental(QWidget):
         paypalrestsdk.configure(
 
             {
-                "mode": "live",
+                "mode": "sandbox",
                 "client_id": paypal_id,
                 "client_secret": paypal_secret
             }
@@ -482,15 +489,7 @@ class NewRental(QWidget):
                 }
             },
 
-                {
-                "name": "Kaution",
-                "description": "Rückzahlung bei vollständiger und pünktlicher Rückgabe",
-                "quantity": 1,
-                "unit_price": {
-                    "currency": "EUR",
-                    "value": 50
-                }
-            },
+               
 
             ],
 
@@ -525,6 +524,20 @@ class NewRental(QWidget):
                     "value": self.shippingCost
                 }
             }
+
+        if self.depositCheckBox.isChecked() is True:
+
+            invoice["items"].append( {
+                "name": "Kaution",
+                "description": "Rückzahlung bei vollständiger und pünktlicher Rückgabe",
+                "quantity": 1,
+                "unit_price": {
+                    "currency": "EUR",
+                    "value": 50
+                }
+
+            }
+            )
 
         invoice.create()
         invoice.send()
@@ -607,6 +620,8 @@ class AddArticle(QWidget):
 
     def checkAvailability(self, artikeltyp, startNewAusleihe, endNewAusleihe):
 
+        
+
         startNewAusleihe = pd.to_datetime(startNewAusleihe)
         endNewAusleihe = pd.to_datetime(endNewAusleihe)
         rentals_query = f"""SELECT artikeltyp.bezeichnung, ausleiheninhalt.serien_nr, ausleihe.ausleihe_id, ausleihe.startdatum, ausleihe.enddatum, ausleihe.versand
@@ -614,7 +629,7 @@ class AddArticle(QWidget):
                     JOIN ausleihe ON ausleihe.ausleihe_id = ausleiheninhalt.ausleihe_id
                     JOIN artikel ON artikel.serien_nr = ausleiheninhalt.serien_nr
                     JOIN artikeltyp ON artikeltyp.artikeltyp_id = artikel.artikeltyp_id
-                    WHERE artikeltyp.bezeichnung = '{artikeltyp} AND ausleihe.storniert = 0'
+                    WHERE artikeltyp.bezeichnung = '{artikeltyp}' AND ausleihe.storniert = 0
                     """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
