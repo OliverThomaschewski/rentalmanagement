@@ -332,79 +332,90 @@ class NewRental(QWidget):
         widget.updateTotal()
 
     def saveNewRental(self):
+        try:
+            customer_id = NONE
+            ausleihe_id = NONE
+            gesamtpreis = float(self.total_le.text())
+            start_date = self.cal_start.selectedDate().toString("yyyy-MM-dd")
+            end_date = self.cal_end.selectedDate().toString("yyyy-MM-dd")
+            shipping = NONE
 
-        customer_id = NONE
-        ausleihe_id = NONE
-        gesamtpreis = float(self.total_le.text())
-        start_date = self.cal_start.selectedDate().toString("yyyy-MM-dd")
-        end_date = self.cal_end.selectedDate().toString("yyyy-MM-dd")
-        shipping = NONE
+            # Check if Shipping or pickup
 
-        # Check if Shipping or pickup
+            if self.shipping_cb.currentIndex() == 0:
+                shipping = 0
+            else:
+                shipping = 1
 
-        if self.shipping_cb.currentIndex() == 0:
-            shipping = 0
-        else:
-            shipping = 1
+            vorzuname = self.name_field.text() + " " + self.surname_field.text()
+            strasse = self.street_field.text()
+            plz = int(self.plz_field.text())
+            stadt = self.city_field.text()
+            email = self.email_field.text()
 
-        vorzuname = self.name_field.text() + " " + self.surname_field.text()
-        strasse = self.street_field.text()
-        plz = int(self.plz_field.text())
-        stadt = self.city_field.text()
-        email = self.email_field.text()
+            # Save the Adress and/or get the id of the Adress
 
-        # Save the Adress and/or get the id of the Adress
+            if (self.existing_costumer_cb.currentIndex() == -1 or self.existing_costumer_cb.currentIndex() == 0):
 
-        if (self.existing_costumer_cb.currentIndex() == -1 or self.existing_costumer_cb.currentIndex() == 0):
+                insert_customer_query = f""" INSERT INTO kontaktdaten ( vorzuname,strasse, plz, stadt, email)
+                                            VALUES ('{vorzuname}', '{strasse}', {plz}, '{stadt}', '{email}')"""
 
-            insert_customer_query = f""" INSERT INTO kontaktdaten ( vorzuname,strasse, plz, stadt, email)
-                                        VALUES ('{vorzuname}', '{strasse}', {plz}, '{stadt}', '{email}')"""
+                conn = sqlite3.connect("db\\verleihverwaltung.db")
+                cursor = conn.cursor()
+                cursor.execute(insert_customer_query)
+                conn.commit()
+                customer_id = cursor.lastrowid
+                cursor.close()
+
+            else:
+                get_id_query = f"""SELECT kontaktdaten_id 
+                                    FROM kontaktdaten
+                                    WHERE vorzuname = '{self.existing_costumer_cb.currentText()}'"""
+
+                conn = sqlite3.connect("db\\verleihverwaltung.db")
+                cursor = conn.cursor()
+                customer_id = cursor.execute(get_id_query).fetchall()[0][0]
+
+                conn.commit()
+                cursor.close()
+        
+
+           
+                
+
+            # Save into Ausleihe and get Id of ausleihe (use id to insert values into ausleiheninhalt)
+
+            insert_ausleihe_query = f"""INSERT INTO ausleihe (kontaktdaten_id, gesamtpreis, rechnungsdatum, startdatum, enddatum, versand)
+                                        VALUES ({customer_id}, {gesamtpreis}, '{str(date.today())}', '{start_date}', '{end_date}', {shipping})"""
 
             conn = sqlite3.connect("db\\verleihverwaltung.db")
             cursor = conn.cursor()
-            cursor.execute(insert_customer_query)
+            cursor.execute(insert_ausleihe_query)
             conn.commit()
-            customer_id = cursor.lastrowid
+            ausleihe_id = cursor.lastrowid
             cursor.close()
 
-        else:
-            get_id_query = f"""SELECT kontaktdaten_id 
-                                FROM kontaktdaten
-                                WHERE vorzuname = '{self.existing_costumer_cb.currentText()}'"""
-
+            # INSERT Contents of rental in ausleiheninhalt
             conn = sqlite3.connect("db\\verleihverwaltung.db")
-            cursor = conn.cursor()
-            customer_id = cursor.execute(get_id_query).fetchall()[0][0]
+            for object in self.object_list:
+                insert_inhalt_query = f"""INSERT INTO ausleiheninhalt
+                                            VALUES ({ausleihe_id}, '{object.serialNr}')"""
 
-            conn.commit()
+                cursor = conn.cursor()
+                cursor.execute(insert_inhalt_query)
+                conn.commit()
+
             cursor.close()
+            self.createInvoice()
 
-        # Save into Ausleihe and get Id of ausleihe (use id to insert values into ausleiheninhalt)
+            self.reset()
 
-        insert_ausleihe_query = f"""INSERT INTO ausleihe (kontaktdaten_id, gesamtpreis, rechnungsdatum, startdatum, enddatum, versand)
-                                    VALUES ({customer_id}, {gesamtpreis}, '{str(date.today())}', '{start_date}', '{end_date}', {shipping})"""
+        except Exception as e:
 
-        conn = sqlite3.connect("db\\verleihverwaltung.db")
-        cursor = conn.cursor()
-        cursor.execute(insert_ausleihe_query)
-        conn.commit()
-        ausleihe_id = cursor.lastrowid
-        cursor.close()
-
-        # INSERT Contents of rental in ausleiheninhalt
-        conn = sqlite3.connect("db\\verleihverwaltung.db")
-        for object in self.object_list:
-            insert_inhalt_query = f"""INSERT INTO ausleiheninhalt
-                                        VALUES ({ausleihe_id}, '{object.serialNr}')"""
-
-            cursor = conn.cursor()
-            cursor.execute(insert_inhalt_query)
-            conn.commit()
-
-        cursor.close()
-        self.createInvoice()
-
-        self.reset()
+            dlg = QErrorMessage()
+            dlg.setWindowTitle("Fehler")
+            dlg.showMessage(str(e))
+            dlg.exec()
 
     def createInvoice(self):
 
@@ -424,8 +435,8 @@ class NewRental(QWidget):
             ausleiheninhalt += article.article + "\n"
 
         dotenv.load_dotenv("widgets\credentials.env")
-        paypal_id = os.getenv("paypalID_sb")
-        paypal_secret = os.getenv("paypalSECRET_sb")
+        paypal_id = os.getenv("paypalID")
+        paypal_secret = os.getenv("paypalSECRET")
 
         email = os.getenv("email")
         first_name = os.getenv("first_name")
@@ -439,7 +450,7 @@ class NewRental(QWidget):
         paypalrestsdk.configure(
 
             {
-                "mode": "sandbox",
+                "mode": "live",
                 "client_id": paypal_id,
                 "client_secret": paypal_secret
             }

@@ -24,3 +24,8 @@ widgets/__pycache__/activeRentals.cpython-310.pyc
 *.pyc
 *.pyc
 *.pyc
+widgets/credentials.env
+widgets/testing.py
+widgets/testing.py
+db/verleihverwaltung.db
+db/verleihverwaltung.db
