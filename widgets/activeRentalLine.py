@@ -173,15 +173,16 @@ hiermit bestätigen wir die Rückgabe deiner Ausleihe.
 
 Solltest du in Zukunft wieder etwas benötigen, schreib uns gerne.
 
-Wir würden uns freuen, wenn wir dich in unserem Newsletter begrüßen dürfen.
+Gerne kannst du unserem Ebay Kleinanzeigen Unternehmensprofil folgen.
 
-Darin erhältst du Updates zu unseren Ausleihartikeln und zusätzlich 10% bei deiner nächsten Ausleihe.
+Klicke dazu einfach auf folgenden Link und anschließend auf "Folgen":
 
-Eintragen kannst du dich über folgenden Link: https://mailchi.mp/9a820de77a38/outleih-landing
+https://www.ebay-kleinanzeigen.de/pro/outleih
 
 Vielen dank für dein Vetrauen in uns und bis zum nächsten Mal.
 
 Dein Outleih Team """
+
 
         mail = MIMEText(text)
         mail["subject"] = "Rückgabe GoPro"
