@@ -12,7 +12,6 @@ from widgets.rentalInfo import RentalInfo
 
 
 class ActiveRentals(QWidget):
-    
 
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
@@ -53,7 +52,8 @@ class ActiveRentals(QWidget):
         rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum
                     FROM ausleihe
                     JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
-                    WHERE rueckgabedatum IS NULL AND storniert = 0
+                    WHERE rueckgabedatum IS NULL AND storniert = 0 
+                    ORDER BY startdatum
                 """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
@@ -70,6 +70,7 @@ class ActiveRentals(QWidget):
             self.activeRentalsLayout.addWidget(line)
 
     def updateLines(self, rental):
+
         count = self.activeRentalsLayout.count()
 
         item = self.activeRentalsLayout.itemAt(count-1)
@@ -80,7 +81,7 @@ class ActiveRentals(QWidget):
         rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum
                     FROM ausleihe
                     JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
-                    WHERE ausleihe_id > {latest_id} AND storniert = 0
+                   WHERE ausleihe_id > {latest_id} AND storniert = 0
                 """
 
         conn = sqlite3.connect("db\\verleihverwaltung.db")
@@ -97,12 +98,3 @@ class ActiveRentals(QWidget):
             line = ActiveRentalLine(self, rental)
 
             self.activeRentalsLayout.addWidget(line)
-
-
-
-
-
-
-   
-
- 

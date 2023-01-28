@@ -378,10 +378,6 @@ class NewRental(QWidget):
 
                 conn.commit()
                 cursor.close()
-        
-
-           
-                
 
             # Save into Ausleihe and get Id of ausleihe (use id to insert values into ausleiheninhalt)
 
@@ -500,7 +496,7 @@ class NewRental(QWidget):
                 }
             },
 
-               
+
 
             ],
 
@@ -519,14 +515,20 @@ class NewRental(QWidget):
 
             },
 
+            
+                "note": f"""Ausleihe vom {startdatum} - {enddatum}
+               Rückgabe bis spätestens {rueckgabe_datum}""",
 
-            "note": f"""Ausleihe vom {startdatum} - {enddatum}
-            Rückgabe bis spätestens {rueckgabe_datum}
-            """,
+            
+
+           
 
 
-        }
-        )
+
+
+
+
+        })
 
         if self.shipping_cb.currentIndex() != 0:
             invoice["shipping_cost"] = {
@@ -538,7 +540,7 @@ class NewRental(QWidget):
 
         if self.depositCheckBox.isChecked() is True:
 
-            invoice["items"].append( {
+            invoice["items"].append({
                 "name": "Kaution",
                 "description": "Rückzahlung bei vollständiger und pünktlicher Rückgabe",
                 "quantity": 1,
@@ -630,8 +632,6 @@ class AddArticle(QWidget):
         self.checkAvailability(artikelTyp, startDatum, endDatum)
 
     def checkAvailability(self, artikeltyp, startNewAusleihe, endNewAusleihe):
-
-        
 
         startNewAusleihe = pd.to_datetime(startNewAusleihe)
         endNewAusleihe = pd.to_datetime(endNewAusleihe)
@@ -737,7 +737,7 @@ class AddArticle(QWidget):
         if len(verfügbare_serial) == 0:
             self.serialNr = "Nicht verfügbar"
         else:
-            self.serialNr = random.choice(verfügbare_serial)
+            self.serialNr = verfügbare_serial[0]
 
         self.availableSerial.setText(self.serialNr)
         self.article = self.articles_cb.currentText()
