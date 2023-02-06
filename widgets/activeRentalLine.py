@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pickle import TRUE
 from queue import Empty
 import sqlite3
@@ -55,6 +55,12 @@ class ActiveRentalLine(QWidget):
         else:
             versanddatum = self.startdatum - timedelta(days=1)
             rueckgabedatum = self.enddatum + timedelta(days=2)
+
+
+
+        if self.enddatum <= datetime.today() and rental[7] == 0:
+            self.sendReminder()
+
 
         self.versandDatumLabel.setText(versanddatum.strftime('%Y-%m-%d'))
         self.rueckgabeDatumLabel.setText(rueckgabedatum.strftime('%Y-%m-%d'))
@@ -185,6 +191,51 @@ Dein Outleih Team """
 
 
         mail = MIMEText(text)
+        mail["subject"] = "Rückgabebestätigung Outleih"
+        sender = f"Outleih <{sender_mail}>"
+        receiver = email
+
+        s = smtplib.SMTP_SSL("smtp.strato.de", 465)
+
+        dotenv.load_dotenv("widgets\credentials.env")
+        login = os.getenv("stratoLOGIN")
+        pw = os.getenv("stratoPW")
+        s.login(login, pw)
+        s.sendmail(sender, receiver, mail.as_string())
+        s.quit()
+
+    def sendReminder(self):
+        query = f"""SELECT kontaktdaten.vorzuname, kontaktdaten.email,
+                    FROM ausleihe
+                    JOIN kontaktdaten ON ausleihe.kontaktdaten_id = kontaktdaten.kontaktdaten_id
+                    WHERE ausleihe.ausleihe_id = {self.ausleihe_id}
+                        """
+
+        conn = sqlite3.connect("db\\verleihverwaltung.db")
+        cursor = conn.cursor()
+        data = cursor.execute(query).fetchall()
+
+        conn.commit()
+        cursor.close()
+
+        vorname = data[0][0].split()[0]
+        email = data[0][1]
+
+        dotenv.load_dotenv("widgets\credentials.env")
+
+        sender_mail = os.getenv("email")
+
+        text = f"""Hallo {vorname},\n
+Wir hoffen mit der Kamera hat alles geklappt und du konntest ein paar tolle Aufnahmen machen.
+
+Solltest du die Kamera zurücksenden, schicke uns doch bitte die Trackingnummer zu sobald du das Paket abgegeben hast.
+
+Bringst du die Kamera selbst zurück, gib einfach kurz Bescheid, wann du sie bringen möchtest.
+
+Dein Outleih Team """
+
+
+        mail = MIMEText(text)
         mail["subject"] = "Rückgabe GoPro"
         sender = f"Outleih <{sender_mail}>"
         receiver = email
@@ -197,3 +248,12 @@ Dein Outleih Team """
         s.login(login, pw)
         s.sendmail(sender, receiver, mail.as_string())
         s.quit()
+
+        update_query = f"""UPDATE ausleihe SET returnmail = 1
+                    WHERE ausleihe_id = '{self.ausleihe_id}'"""
+
+        conn = sqlite3.connect("db\\verleihverwaltung.db")
+        conn.execute(update_query)
+        conn.commit()
+        conn.close()
+

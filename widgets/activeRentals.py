@@ -49,7 +49,7 @@ class ActiveRentals(QWidget):
 
         self.activeRentalsLayout.addLayout(self.activeRentalsHeaderLayout)
 
-        rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum
+        rentals_query = f"""SELECT ausleihe_id, kontaktdaten.vorzuname, startdatum, versand, bezahldatum, versanddatum, enddatum, returnmail
                     FROM ausleihe
                     JOIN kontaktdaten ON kontaktdaten.kontaktdaten_id = ausleihe.kontaktdaten_id 
                     WHERE rueckgabedatum IS NULL AND storniert = 0 
