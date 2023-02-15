@@ -20,6 +20,7 @@ Das Programm gibt die Möglichkeit Ausleihen anzulegen und zu verwalten.
 ## Motivation
 
 "Excel is ätzend"
+
 "Ich studier doch Informatik, probier ich einfach mal rum"
 
 ## Stack
