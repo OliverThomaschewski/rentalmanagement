@@ -33,7 +33,7 @@ Das Programm gibt die Möglichkeit Ausleihen anzulegen und zu verwalten.
 
 Die Installation erfolgt über das Kommando 
 
-***pyinstaller --onefile --noconsole -/Verleihverwaltung.py***
+***pyinstaller --onefile --noconsole ./Verleihverwaltung.py***
 
 Die Datenbank wird mit dem Code in db.sql erstellt.
 
