@@ -8,7 +8,7 @@
 3. [Stack](#Stack)
 4. [Installation](#Installation)
 5. [Funktionen](#Funktionen)
-6. [Für die Zukunft](#Zukünftige Funktionen)
+6. [Bugs und Ausblick](#Bugs)
 
 
 
@@ -116,18 +116,21 @@ mit dem Versanddatum einer anderen überschneidet und die Ausrüstung nach Rück
 
 
 
-## Zukünftige Funktionen
-
-- Automatisches erstellen des Versandettikets und Email an den Ausleiher inklusive Trackingnummer
+## Bugs und Ausblick
 
 
-## "Bugs"
+***Bugs***
 
 - Update der Verfügbarkeiten nach ändern der Versandart
 - Automatisches neu Laden des "Aktive Ausleihen" Tabs
 - Sonstige Einnahmen Tab mal schöner.
 
-## Wäre cool, für den Scope aber egal
+***Wäre cool und kommt irgendwann***
+
+- Automatisches erstellen des Versandettikets und Email an den Ausleiher inklusive Trackingnummer
+
+
+***Wäre cool, für den Scope aber egal***
 
 - Erstellen eines Benutzers mit automatischer Erstellung der Datenbank und Zugangsdaten
 
