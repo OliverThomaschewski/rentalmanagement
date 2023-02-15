@@ -59,6 +59,8 @@ Pufferzeiten für den Versand und die Rückgabe werden wie folgt berechnet:
  
 Diese Pufferzeiten haben keinen Einfluss auf den Preis der Ausleihe.
 
+Wochenanzahl zur Berechnung des Gesamtpreises und Gesamtpreis sind auch individuell einstellbar.
+
 Beim Speichern der Ausleihe wird automatisch eine PayPal - Rechnung über die PayPal API generiert und an den Ausleihenden verschickt.
 
 ### Tab "Aktive Ausleihen"
