@@ -35,7 +35,7 @@ Die Installation erfolgt über das Kommando
 
 pyinstaller --onefile --noconsole -/Verleihverwaltung.py
 
-Die Datenbank wird mit dem Code in dq.sql erstellt.
+Die Datenbank wird mit dem Code in db.sql erstellt.
 
 Zugangsdaten werden in einer credentials.env zur Verfügung gestellt.
 
