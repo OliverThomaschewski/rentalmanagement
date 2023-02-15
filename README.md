@@ -8,9 +8,8 @@
 3. [Stack](#Stack)
 4. [Installation](#Installation)
 5. [Funktionen](#Funktionen)
-6. [Zukünftige Funktionen](#Zukünftige Funktionen)
-7. [Bugs](#Bugs)
-8. [Nice to have](#wäre cool)
+6. [Für die Zukunft](#Zukünftige Funktionen)
+
 
 
 ## Beschreibung
@@ -81,15 +80,19 @@ Der Tab wird beim öffnen des Programms geladen, somit werden neu angelegte Ausl
 
 
 *Typ Hinzufügen*
+
 Fügt einen neue Artikeltyp hinzu. Nach Angabe des Anschaffungspreises wird ein Wochenpreis vorgeschlagen, dieser kann aber geändert werden.
 
 *Seriennummer*
+
 Nach der Auswahl eines Typs kann ein neuer Artikel für diesen Typ mithilfe einer neuen Seriennummer angelegt werden.
 
 *Typ deaktivieren*
+
 Deaktivert einen gesamten Artikeltyp. Ist relevant, wenn ein Artikel komplett aus dem Verleihangebot genommen wird.
 
 *SerienNr deaktivieren*
+
 Deaktiviert nur eine bestimmte Seriennummer. Beispielsweise bei Verkauf oder Beschädigung des Artikels.
 
 *Neuer Wochenpreis*
