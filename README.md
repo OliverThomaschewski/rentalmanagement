@@ -1,9 +1,17 @@
 # Verleihverwaltung 
 
 
-## Inhaltsverzeichniss
+## Inhaltsverzeichnis
 
 1. [Beschreibung](#Beschreibung)
+2. [Motivation](#Motivation)
+3. [Stack](#Stack)
+4. [Installation](#Installation)
+5. [Funktionen](#Funktionen)
+6. [Zukünftige Funktionen](#Zukünftige Funktionen)
+7. [Bugs](#Bugs)
+8. [Nice to have](#wäre cool)
+
 
 ## Beschreibung
 
@@ -31,7 +39,7 @@ Die Datenbank wird mit dem Code in dq.sql erstellt.
 
 Zugangsdaten werden in einer credentials.env zur Verfügung gestellt.
 
-## Funktionen der Programms
+## Funktionen
 
 Im folgenden werden alle Funktionen und Besonderheiten bei der Bedienung erklärt.
 
