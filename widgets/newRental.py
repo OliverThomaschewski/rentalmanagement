@@ -518,13 +518,12 @@ class NewRental(QWidget):
 
             
                 "note": f"""Ausleihe vom {startdatum} - {enddatum}
-               Rückgabe bis spätestens {rueckgabe_datum}""",
-
-            
-
-           
-
-
+               Rückgabe bis spätestens {rueckgabe_datum}
+               
+               
+               Kleinunternehmerregelung - ohne Umsatzsteuerausweis gemäß §19 UStG
+               
+               """,
 
 
 
@@ -538,7 +537,7 @@ class NewRental(QWidget):
                     "value": self.shippingCost
                 }
             }
-
+                                                                                 
         if self.depositCheckBox.isChecked() is True:
 
             invoice["items"].append({

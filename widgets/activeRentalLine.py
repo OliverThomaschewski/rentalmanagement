@@ -57,11 +57,7 @@ class ActiveRentalLine(QWidget):
             rueckgabedatum = self.enddatum + timedelta(days=2)
 
 
-        """
-        Hier sollte die Funktion aufgerufen werden um Erinnerungsemails für die Rückgabe zu schicken
-        if self.enddatum <= datetime.today() and rental[7] == 0:
-            self.sendReminder()
-        """
+       
 
         self.versandDatumLabel.setText(versanddatum.strftime('%Y-%m-%d'))
         self.rueckgabeDatumLabel.setText(rueckgabedatum.strftime('%Y-%m-%d'))
